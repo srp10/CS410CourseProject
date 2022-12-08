@@ -126,7 +126,9 @@ no_of_tweets =1000
 
 while True:
    brand_name = input("\nEnter the name of a Brand. Please use common names \
-   where possible. For Example: Type in 'Apple' and not 'Apple Inc': ")
+   where possible. For Example: Type in 'Apple' and not 'Apple Inc'. Please \
+   use only alphanumeric letters and remove any special chaarcters such as \
+   '&' etc from the name : ")
    if not brand_name.strip().replace(" ", "").isalpha():
        print ("Invalid! Please enter a valid company name") 
    else:
@@ -214,107 +216,110 @@ for ind in tweets_df.index:
             tweets.append(parsed_tweet)
         #   tweets.append(parsed_tweet)
         #print(parsed_tweet) 
-        
-# picking positive tweets from tweets
-ptweets = [tweet for tweet in tweets if tweet['sentiment'] == 'Positive']
-# percentage of positive tweets
-print("Positive tweets percentage: {} %".format(100*len(ptweets)/len(tweets)))
-# picking negative tweets from tweets
-ntweets = [tweet for tweet in tweets if tweet['sentiment'] == 'Negative']
-# percentage of negative tweets
-print("Negative tweets percentage: {} %".format(100*len(ntweets)/len(tweets)))
-# percentage of neutral tweets
-print("Neutral tweets percentage: {} % \
-".format(100*(len(tweets) -(len( ntweets )+len( ptweets)))/len(tweets)))
 
-
-
-scorecrd = []
-output_details = {}
-output_details['Positive tweets'] = len(ptweets)
-output_details['Positive tweets percentage'] = "{} %".format(100*len(ptweets)/len(tweets))
-output_details['Negative tweets'] = len(ntweets)
-output_details['Negative tweets percentage'] = "{} %".format(100*len(ntweets)/len(tweets))
-output_details['Neutral tweets'] = len(tweets) -(len( ntweets )+len( ptweets))
-output_details['Neutral tweets percentage'] = "{} %".\
-format(100*(len(tweets) -(len( ntweets )+len( ptweets)))/len(tweets))
-
-scorecrd.append(output_details)
-# create dataframe
-scorecard_marks = pd.DataFrame(scorecrd)
-     
-#print(tweets_df.head(30))
-
-# create a new dataframe from the tweets list created
-fin_data = pd.DataFrame(tweets)
-
-
-# Export dataframe into a CSV - source tweet data 
-tweets_df.to_csv('output/' + brand_name + '_text-query-tweets.csv', sep=',', index=False)
-
-
-# Export dataframe into a CSV - clean and analysed tweet data 
-fin_data.to_html('output/' + brand_name + '_final_output' + '.html')
-
-# counts of positive, neutral and negative tweets
-tb_counts = fin_data.sentiment.value_counts()
-
-#scorecrd.append(tb_counts)
-
-# create dataframe
-#scorecard_marks = pd.DataFrame(scorecrd, tb_counts)
-
-# Export dataframe into a CSV - clean and analysed tweet data 
-scorecard_marks.to_html('output/' + brand_name + '_scorecard' + '.html' )
-
-
-
-print(tb_counts)
-
-# Bar Chart for Sentiment
-labels = fin_data.groupby('sentiment').count().index.values
-values = fin_data.groupby('sentiment').size().values
-plt.bar(labels, values)
-#plt.show()
-plt.savefig('output/' + brand_name + '_sentiment_bar_chart.png', dpi=100)
-
-plt.clf()
-plt.cla()
-plt.close()
-
-# Polarity & Subjectivity Chart
-for index, row in fin_data.iterrows():
-    if row['sentiment'] == 'Positive':
-        plt.scatter(row['Polarity'], row['Subjectivity'], color="green")
-    elif row['sentiment'] == 'Negative':
-        plt.scatter(row['Polarity'], row['Subjectivity'], color="red")
-    elif row['sentiment'] == 'Neutral':
-        plt.scatter(row['Polarity'], row['Subjectivity'], color="blue")
-plt.title('Twitter Sentiment Analysis')
-plt.xlabel('Polarity')
-plt.ylabel('Subjectivity')
-# add legend
-#plt.show()
-plt.savefig('output/' + brand_name + '_polarity_subj_plot.png', dpi=100)
-
-
-plt.clf()
-plt.cla()
-plt.close()
-
-# Creating a word cloud
-#df = pd.DataFrame(data=[tweet for tweet in tweets], columns=['text'])
-plt.figure(figsize=[80,40])
-words = ' '.join([tweet for tweet in fin_data['text']])
-wordCloud = WordCloud(width=600, height=400).generate(words)
-
-plt.imshow(wordCloud)
-#plt.show()
-plt.savefig('output/' + brand_name + '_wordcloud.png', dpi=100)
-
-plt.clf()
-plt.cla()
-plt.close()
+if (len(tweets) == 0):
+    print("No recent tweets for that name. Please try again later!")
+else:    
+    # picking positive tweets from tweets
+    ptweets = [tweet for tweet in tweets if tweet['sentiment'] == 'Positive']
+    # percentage of positive tweets
+    print("Positive tweets percentage: {} %".format(100*len(ptweets)/len(tweets)))
+    # picking negative tweets from tweets
+    ntweets = [tweet for tweet in tweets if tweet['sentiment'] == 'Negative']
+    # percentage of negative tweets
+    print("Negative tweets percentage: {} %".format(100*len(ntweets)/len(tweets)))
+    # percentage of neutral tweets
+    print("Neutral tweets percentage: {} % \
+    ".format(100*(len(tweets) -(len( ntweets )+len( ptweets)))/len(tweets)))
+    
+    
+    
+    scorecrd = []
+    output_details = {}
+    output_details['Positive tweets'] = len(ptweets)
+    output_details['Positive tweets percentage'] = "{} %".format(100*len(ptweets)/len(tweets))
+    output_details['Negative tweets'] = len(ntweets)
+    output_details['Negative tweets percentage'] = "{} %".format(100*len(ntweets)/len(tweets))
+    output_details['Neutral tweets'] = len(tweets) -(len( ntweets )+len( ptweets))
+    output_details['Neutral tweets percentage'] = "{} %".\
+    format(100*(len(tweets) -(len( ntweets )+len( ptweets)))/len(tweets))
+    
+    scorecrd.append(output_details)
+    # create dataframe
+    scorecard_marks = pd.DataFrame(scorecrd)
+         
+    #print(tweets_df.head(30))
+    
+    # create a new dataframe from the tweets list created
+    fin_data = pd.DataFrame(tweets)
+    
+    
+    # Export dataframe into a CSV - source tweet data 
+    tweets_df.to_csv('output/' + brand_name + '_text-query-tweets.csv', sep=',', index=False)
+    
+    
+    # Export dataframe into a CSV - clean and analysed tweet data 
+    fin_data.to_html('output/' + brand_name + '_final_output' + '.html')
+    
+    # counts of positive, neutral and negative tweets
+    tb_counts = fin_data.sentiment.value_counts()
+    
+    #scorecrd.append(tb_counts)
+    
+    # create dataframe
+    #scorecard_marks = pd.DataFrame(scorecrd, tb_counts)
+    
+    # Export dataframe into a CSV - clean and analysed tweet data 
+    scorecard_marks.to_html('output/' + brand_name + '_scorecard' + '.html' )
+    
+    
+    
+    print(tb_counts)
+    
+    # Bar Chart for Sentiment
+    labels = fin_data.groupby('sentiment').count().index.values
+    values = fin_data.groupby('sentiment').size().values
+    plt.bar(labels, values)
+    #plt.show()
+    plt.savefig('output/' + brand_name + '_sentiment_bar_chart.png', dpi=100)
+    
+    plt.clf()
+    plt.cla()
+    plt.close()
+    
+    # Polarity & Subjectivity Chart
+    for index, row in fin_data.iterrows():
+        if row['sentiment'] == 'Positive':
+            plt.scatter(row['Polarity'], row['Subjectivity'], color="green")
+        elif row['sentiment'] == 'Negative':
+            plt.scatter(row['Polarity'], row['Subjectivity'], color="red")
+        elif row['sentiment'] == 'Neutral':
+            plt.scatter(row['Polarity'], row['Subjectivity'], color="blue")
+    plt.title('Twitter Sentiment Analysis')
+    plt.xlabel('Polarity')
+    plt.ylabel('Subjectivity')
+    # add legend
+    #plt.show()
+    plt.savefig('output/' + brand_name + '_polarity_subj_plot.png', dpi=100)
+    
+    
+    plt.clf()
+    plt.cla()
+    plt.close()
+    
+    # Creating a word cloud
+    #df = pd.DataFrame(data=[tweet for tweet in tweets], columns=['text'])
+    plt.figure(figsize=[80,40])
+    words = ' '.join([tweet for tweet in fin_data['text']])
+    wordCloud = WordCloud(width=600, height=400).generate(words)
+    
+    plt.imshow(wordCloud)
+    #plt.show()
+    plt.savefig('output/' + brand_name + '_wordcloud.png', dpi=100)
+    
+    plt.clf()
+    plt.cla()
+    plt.close()
 
 """
 # References
